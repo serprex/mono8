@@ -1,0 +1,21 @@
+{
+linux=sys.platform.startswith("linux")
+}
+cc={$"gcc" if linux else "clang"$} -pipe
+cf=-std=gnu11 -Os -ffast-math -flto
+rule cc
+ command = $cc $in $cf $of -o $out -MMD -MF $out.d
+ depfile = $out.d
+rule mingw
+ command = i486-mingw32-gcc -s $cf $in -msse2 -o $out -lglfw -lopengl32 -lm -lws2_32
+rule pinch
+ command = pinch S
+build tgen.c: pinch spr/S.png
+{
+src="tgen","spr","lv","obj","m8"
+for s in src:print("build {0}.o: cc {0}.c\n of=-c".format(s))
+}
+build mono8:cc {$" ".join(s+".o" for s in src)$}
+ of=-s -fwhole-program -lm -lglfw -{$"lGL" if linux else "framework OpenGL"$}
+build mono8.exe:mingw {$" ".join(s+".c" for s in src)$}
+default mono8

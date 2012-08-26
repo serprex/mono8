@@ -1,0 +1,18 @@
+typedef enum{Sno,Shh,Ssp,Sbi,Spk,Sbo,LSPR}sprid;
+void notex();
+void retex();
+void drawSpr(sprid s,int x,int y);
+void glCirc(float x,float y,float r);
+void glLine(float x1,float y1,float x2,float y2);
+void glTriangle(float,float,float,float,float,float);
+void glLzr();
+void sprInit();
+void sprBegin();
+void sprEnd();
+int sprInput();
+void glBlack();
+void glWhite();
+void enableBlend();
+void disableBlend();
+void glRect(float,float,float,float);
+uint32_t rnd();
