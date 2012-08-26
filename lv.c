@@ -31,6 +31,12 @@ static void plus(int x,int y,int m){
 	if(!(m&4))L[x][y+1]=Wd;
 	if(!(m&8))L[x][y-1]=Wd;
 }
+static void range(int t,int x,int y,int dir,int len){
+	if(dir)
+		memset(L[x]+y,t,len);
+	else for(int i=0;i<len;i++)
+		L[x+i][y]=t;
+}
 #define D(xx,yy) ((yy<0?128:0)|(yy>0?yy:-yy)<<4|xx)
 #define w 128|
 #define u 192|
@@ -81,9 +87,9 @@ void genL(){
 		18,3,B,
 		72,5,B,
 		75,3,B,
+		79,4,B,
 		79,5,B,
-		79,6,B,
-		80,6,B,
+		80,5,B,
 		44,44,B,
 		8,28,Wm,
 		9,28,Wm,
@@ -329,6 +335,25 @@ void genL(){
 		88,30,B,
 		86,32,B,
 		86,34,B,
+		96,44,B,
+		82,33,B,
+		88,50,B,
+		90,50,B,
+		85,58,B,
+		86,57,B,
+		87,56,B,
+		88,57,B,
+		88,54,B,
+		89,55,B,
+		90,56,B,
+		98,61,B,
+		97,63,B,
+		89,70,B,
+		90,71,B,
+		88,71,B,
+		89,72,B,
+		98,70,B,
+		98,75,w f W,
 	};
 	assert(!(sizeof(tiles)%3));
 	for(int i=0;i<sizeof(tiles);i+=3)
@@ -346,7 +371,7 @@ void genL(){
 	}
 	for(int x=1;x<=10;x++)
 		wal(x,64,Wm);
-	for(int y=6;y<=70;y++){
+	for(int y=5;y<=69;y++){
 		wal(81,y,B);
 		wal(99,y,B);
 	}
@@ -381,20 +406,15 @@ void genL(){
 				wal(catrumpx,y,Bd);
 		}
 	}
-	for(int y=26;y<=31;y++)
-		til(27,y,Bd);
+	range(Bd,27,26,1,6);
 	for(int x=18;x<=45;x++)
 		for(int y=32;y<=34;y++)
 			if(y>=33||x<=39)
 				til(x,y,Wd);
-	for(int x=40;x<=42;x++)
-		wal(x,32,Bd);
-	for(int x=83;x<=98;x++)
-		wal(x,25,B);
-	for(int x=11;x<=18;x++)
-		wal(x,68,Wm);
-	for(int x=3;x<=11;x++)
-		wal(x,69,Wsa);
+	range(w Bd,40,32,0,3);
+	range(w B,83,25,0,16);
+	range(w Wm,11,68,0,8);
+	range(w Wsa,3,69,0,9);
 	for(int x=2;x<=10;x++){
 		if(x!=1)wal(x,46,Wm);
 		if(x!=6)wal(x,48,Wm);
@@ -411,12 +431,9 @@ void genL(){
 		wal(x*3,79,W);
 		wal(x*3+1,79,W);
 	}
-	for(int x=19;x<=24;x++)
-		wal(x,73,Bsa);
-	for(int x=19;x<=22;x++)
-		wal(x,68,Wsa);
-	for(int y=68;y<=79;y++)
-		wal(26,y,Wsa);
+	range(w Bsa,19,73,0,6);
+	range(w Wsa,19,68,0,4);
+	range(w Wsa,26,68,1,12);
 	til(12,27,Bm);
 	til(12,31,Bm);
 	static bcode smz[]={128|Bd,35,26,D(4,1),D(4,1),D(2,1),D(3,1),D(2,1),D(4,-1),D(4,4),D(4,1),D(4,1),D(2,1),D(5,-4),0,
@@ -463,22 +480,47 @@ void genL(){
 		51,45,D(3,-2),D(5,0),
 		70,51,D(3,1),D(1,1),D(3,-2),D(1,-1),D(1,-3)};
 	diff(mz,sizeof(mz));
+	for(int i=0;i<7;i++)
+		range(w B,84+i*2,62+(i&1),1,2);
 	for(int i=0;i<6;i++)
 		wal(82+i*2,37+i,B);
 	for(int i=0;i<5;i++)
 		wal(83+i,57-i,B);
+	for(int i=0;i<4;i++)
+		wal(98-(i&1),38+i*2,B);
 	for(int x=82;x<=97;x++){
 		wal(x,68,B);
 		if(x&1)wal(x,67,B);
 	}
+	range(w B,93,51,0,3);
+	range(w B,94,49,0,3);
+	range(w B,94,53,0,3);
+	range(w B,78,69,0,3);
+	range(w B,83,65,0,16);
+	range(w B,80,73,0,19);
+	range(w B,79,77,0,20);
+	range(w B,84,33,1,2);
+	range(w B,92,59,1,2);
+	range(w B,94,58,1,2);
+	range(w B,82,71,1,2);
+	range(w B,84,71,1,2);
+	range(w B,86,69,1,3);
+	range(w B,92,69,1,3);
+	range(w B,97,49,1,5);
+	range(w B,78,70,1,8);
+	range(w B,99,70,1,8);
+	range(w W,79,75,0,19);
 	for(int x=80;x<=98;x++)
-		wal(x,73,B);
+		til(x,76,((x^1)&1)<<4|W);
 	static bcode obs[]={128|B,86,46,D(3,1),D(2,1),D(2,-1),D(2,-1),D(4,0),
 		82,59,D(3,2),D(12,-2),D(1,0),
 		87,59,D(4,-2),D(8,0),
 		82,30,D(5,1),D(2,1),D(1,0),
 		86,28,D(3,1),D(3,0),
 		83,35,D(12,-1),D(1,-3),0,
+		82,43,D(15,-5),0,
+		82,51,D(11,4),D(5,0),
+		94,70,D(2,1),D(1,1),0,
 		91,32,D(3,-3),D(2,-3)};
 	diff(obs,sizeof(obs));
 }
