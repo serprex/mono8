@@ -12,7 +12,7 @@ rule pinch
  command = pinch S
 build tgen.c: pinch spr/S.png
 {
-src="tgen","spr","lv","obj","m8"
+src="tgen","spr","lv","m8"
 for s in src:print("build {0}.o: cc {0}.c\n of=-c".format(s))
 }
 build mono8:cc {$" ".join(s+".o" for s in src)$}

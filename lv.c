@@ -25,11 +25,11 @@ static void diff(bcode*a,int alen){
 	}
 }
 static void plus(int x,int y,int m){
-	L[x][y]=Wd;
-	if(!(m&1))L[x+1][y]=Wd;
-	if(!(m&2))L[x-1][y]=Wd;
-	if(!(m&4))L[x][y+1]=Wd;
-	if(!(m&8))L[x][y-1]=Wd;
+	wal(x,y,Wd);
+	if(!(m&1))wal(x+1,y,Wd);
+	if(!(m&2))wal(x-1,y,Wd);
+	if(!(m&4))wal(x,y+1,Wd);
+	if(!(m&8))wal(x,y-1,Wd);
 }
 static void range(int t,int x,int y,int dir,int len){
 	if(dir)
@@ -42,47 +42,172 @@ static void range(int t,int x,int y,int dir,int len){
 #define u 192|
 #define f 16|
 void genL(){
-	//b1 15 36
-	//b2 1 0
-	//b3 8 75
-	//b4 90 12
-	//no 5 5
-	//7 5
-	//9 5
-	//2 27
-	//18 34
-	//hh 5 30
-	//14 40
-	//45 37
-	//sh 3 34
-	//4 37
-	//3 45
-	//39 30
-	//47 43
-	//ju 43 37
-	//mal-v 18 4
-	//mal-h 12 64
-	//16 64
-	//save 80 5
-	//5 37
-	//4 19
-	//chas 82 0
-	//user 6 16
-	//pt 5 17
-	//0 78
-	//12 44
-	//16 44
-	//21 71
-	//25 78
-	//6 51
-	//6 57
-	//53 1
-	//58 60
-	//spk 4 18
-	//3 19
-	//tram 1 24
-	//5 34
-	//14 61
+	for(int x=0;x<11;x++)wal(x,6,B);
+	static bcode topsteps[]={13,15,16,17,22,25,27,29,31,33,35,39,42,44,46,49,53,56,60,64,66,69};
+	for(int i=0;i<sizeof(topsteps);i++)
+		wal(topsteps[i],6,B);
+	static bcode botsteps[]={19,22,25,28,30,32,36,38,40};
+	for(int i=0;i<sizeof(botsteps);i++)
+		wal(botsteps[i],43,B);
+	for(int y=43;y<=64;y++){
+		wal(11,y,Wm);
+		wal(17,y,Wm);
+	}
+	for(int x=1;x<=10;x++)
+		wal(x,64,Wm);
+	for(int y=5;y<=69;y++){
+		wal(81,y,B);
+		wal(99,y,B);
+	}
+	for(int y=8;y<=38;y++)
+		wal(0,y,Bm);
+	for(int y=39;y<=68;y++)
+		wal(0,y,Wm);
+	for(int x=5;x<=17;x++){
+		wal(x,27,FG|Bm);
+		wal(x,31,FG|Bm);
+		if(x>=7&&x<=16)wal(x,38,Bm);
+	}
+	for(int y=27;y<=38;y++){
+		wal(7,y,Bm);
+		if(y<=35)wal(17,y,Bm);
+	}
+	for(int x=18;x<=46;x++)
+		wal(x,35,W);
+	for(int x=17;x<=46;x++)
+		wal(x,38,x&1?Bsa:Bsb);
+	for(int x=18;x<=41;x++)
+		for(int y=36;y<=37;y++)
+			til(x,y,(x^y)&1?Wsb:FG|Wsa);
+	for(int x=18;x<=26;x++)
+		for(int y=28-(x-18)/3;y<=31;y++)wal(x,y,Bd);
+	static const int8_t catrump[]={2,3,1,2,1,4};
+	int catrumpx=27;
+	for(int i=0;i<sizeof(catrump);i++){
+		for(int j=0;j<catrump[i];j++){
+			catrumpx++;
+			for(int y=26+i;y<=31;y++)
+				wal(catrumpx,y,Bd);
+		}
+	}
+	range(Bd,27,26,1,6);
+	for(int x=18;x<=45;x++)
+		for(int y=32;y<=34;y++)
+			if(y>=33||x<=39)
+				til(x,y,Wd);
+	range(w Bd,40,32,0,3);
+	range(w B,83,25,0,16);
+	range(w Wm,11,68,0,8);
+	range(w Wsa,3,69,0,9);
+	for(int x=2;x<=10;x++){
+		if(x!=1)wal(x,46,Wm);
+		if(x!=6)wal(x,48,Wm);
+		if(x!=10)wal(x,55,Wm);
+		if(x!=6&&x!=10)wal(x,57,Wm);
+	}
+	for(int x=2;x<=15;x+=3){
+		wal(x,71,W);
+		wal(x,76,W);
+	}
+	for(int x=0;x<6;x++){
+		wal(x*3,73,W);
+		wal(x*3+1,74,W);
+		wal(x*3,79,W);
+		wal(x*3+1,79,W);
+	}
+	range(w Bsa,19,73,0,6);
+	range(w Wsa,19,68,0,4);
+	range(w Wsa,26,68,1,12);
+	til(12,27,Bm);
+	til(12,31,Bm);
+	static bcode smz[]={128|Bd,35,26,D(4,1),D(4,1),D(2,1),D(3,1),D(2,1),D(4,-1),D(4,4),D(4,1),D(4,1),D(2,1),D(5,-4),0,
+		55,36,D(2,1),D(1,1),D(2,3),D(3,1),D(1,1),D(3,0),
+		61,39,D(6,1),D(4,0),
+		41,24,D(4,-1),D(3,1),D(3,2),D(4,-1),D(3,-1),D(1,-1),D(3,1),D(2,1),D(5,-3),D(2,-1),D(3,6),0,
+		60,30,D(3,1),D(6,-1),D(1,-1),D(2,-1),D(4,-3),D(4,3),0,
+		75,36,D(1,-2),D(1,-2),D(1,-3),D(1,-1),0,
+		77,40,D(2,-3),D(1,-4)};
+	diff(smz,sizeof(smz));
+	for(int x=59;x<=63;x++)
+		wal(x,45,Wd);
+	for(int x=0;x<4;x++)
+		for(int y=0;y<4;y++){
+			int xx=51+x*4,yy=49+y*4,m=0;
+			if(x<3&&y<3)wal(xx,yy,Wd);
+			else(!y)m=8;
+			else(x==3&&y==3)m=4;
+			if(!x){
+				m|=2;
+				if(!y)m=10;
+			}
+			plus(xx-2,yy-2,m);
+		}
+	plus(68,56,0);
+	for(int i=0;i<3;i++){
+		wal(68+i,54,Wd);
+		wal(70,56+i,Wd);
+		wal(68-i,58,Wd);
+		wal(66,56-i,Wd);
+	}
+	static bcode mz[]={128|Wd,50,60,D(0,2),D(1,3),D(2,1),D(1,3),D(3,-1),D(2,-1),0,
+		53,61,D(2,1),D(1,3),D(2,1),D(3,-1),D(8,1),D(4,-1),D(2,-1),D(2,-4),D(1,-3),0,
+		58,63,D(0,-2),D(2,1),D(2,1),D(7,-1),D(3,-1),D(2,-2),0,
+		62,60,D(3,1),D(1,0),
+		64,52,D(0,-2),D(3,1),D(1,0),
+		72,56,D(3,1),D(2,0),
+		70,51,D(3,-2),D(3,0),
+		73,47,D(2,-1),D(1,0),
+		71,45,D(4,-2),D(4,0),
+		63,47,D(4,-1),D(3,-3),D(3,0),
+		72,50,D(1,-1),D(3,0),
+		77,47,D(1,-2),D(1,0),
+		51,45,D(3,-2),D(5,0),
+		70,51,D(3,1),D(1,1),D(3,-2),D(1,-1),D(1,-3)};
+	diff(mz,sizeof(mz));
+	for(int i=0;i<7;i++)
+		range(w B,84+i*2,62+(i&1),1,2);
+	for(int i=0;i<6;i++)
+		wal(82+i*2,37+i,B);
+	for(int i=0;i<5;i++)
+		wal(83+i,57-i,B);
+	for(int i=0;i<4;i++)
+		wal(98-(i&1),38+i*2,B);
+	for(int x=82;x<=97;x++){
+		wal(x,68,B);
+		if(x&1)wal(x,67,B);
+	}
+	range(w B,93,51,0,3);
+	range(w B,94,49,0,3);
+	range(w B,94,53,0,3);
+	range(w B,78,69,0,3);
+	range(w B,83,65,0,16);
+	range(w B,80,73,0,19);
+	range(w B,79,77,0,20);
+	range(w B,84,33,1,2);
+	range(w B,92,59,1,2);
+	range(w B,94,58,1,2);
+	range(w B,82,71,1,2);
+	range(w B,84,71,1,2);
+	range(w B,86,69,1,3);
+	range(w B,92,69,1,3);
+	range(w B,97,49,1,5);
+	range(w B,78,70,1,8);
+	range(w B,99,70,1,8);
+	range(w W,79,75,0,19);
+	for(int x=80;x<=98;x++)
+		til(x,76,((x^1)&1)<<4|W);
+	static bcode obs[]={128|B,86,46,D(3,1),D(2,1),D(2,-1),D(2,-1),D(4,0),
+		82,59,D(3,2),D(12,-2),D(1,0),
+		87,59,D(4,-2),D(8,0),
+		82,30,D(5,1),D(2,1),D(1,0),
+		86,28,D(3,1),D(3,0),
+		83,35,D(12,-1),D(1,-3),0,
+		82,43,D(15,-5),0,
+		82,51,D(11,4),D(5,0),
+		94,70,D(2,1),D(1,1),0,
+		91,32,D(3,-3),D(2,-3)};
+	diff(obs,sizeof(obs));
+	range(Ite,61,64,0,8);
 	static bcode tiles[]={
 		18,3,B,
 		72,5,B,
@@ -354,173 +479,50 @@ void genL(){
 		89,72,B,
 		98,70,B,
 		98,75,w f W,
+		10,46,u Wm,
+		25,25,w Bsh,
+		32,26,w Bsh,
+		37,30,w Bsh,
+		38,30,w Bsh,
+		39,30,w Bsh,
+		40,30,w Bsh,
+		35,25,w Bsh,
+		39,26,w Bsh,
+		41,23,w Bsh,
+		47,22,w Bsh,
+		51,25,w Bsh,
+		59,22,w Bsh,
+		60,22,w Bsh,
+		66,24,w Bsh,
+		72,20,w Bsh,
+		78,46,w Bsh,
+		78,36,w Bsh,
+		75,38,w Bsh,
+		78,27,w Bsh,
+		68,36,w Bsh,
+		58,33,w Bsh,
+		57,29,w Bsh,
+		50,30,w Bsh,
+		54,68,w Bsh,
+		50,61,w Bsh,
+		53,42,w Bsh,
+		65,49,w Bsh,
+		64,52,w Bsh,
+		64,59,w Bsh,
+		66,62,w Bsh,
+		72,58,w Bsh,
+		76,56,w Bsh,
+		70,65,w Bsh,
+		60,64,w Bsh,
+		62,29,w Bsh,
+		64,30,w Bsh,
+		68,29,w Bsh,
+		71,27,w Bsh,
+		79,32,w Bsh,
+		67,45,w Bsh,
+		68,39,w Bsh,
 	};
 	assert(!(sizeof(tiles)%3));
 	for(int i=0;i<sizeof(tiles);i+=3)
 		L[tiles[i]][tiles[i+1]]=128^tiles[i+2];
-	for(int x=0;x<11;x++)wal(x,6,B);
-	static bcode topsteps[]={13,15,16,17,22,25,27,29,31,33,35,39,42,44,46,49,53,56,60,64,66,69};
-	for(int i=0;i<sizeof(topsteps);i++)
-		wal(topsteps[i],6,B);
-	static bcode botsteps[]={19,22,25,28,30,32,36,38,40};
-	for(int i=0;i<sizeof(botsteps);i++)
-		wal(botsteps[i],43,B);
-	for(int y=43;y<=64;y++){
-		wal(11,y,Wm);
-		wal(17,y,Wm);
-	}
-	for(int x=1;x<=10;x++)
-		wal(x,64,Wm);
-	for(int y=5;y<=69;y++){
-		wal(81,y,B);
-		wal(99,y,B);
-	}
-	for(int y=8;y<=38;y++)
-		wal(0,y,Bm);
-	for(int y=39;y<=68;y++)
-		wal(0,y,Wm);
-	for(int x=5;x<=17;x++){
-		wal(x,27,FG|Bm);
-		wal(x,31,FG|Bm);
-		if(x>=7&&x<=16)wal(x,38,Bm);
-	}
-	for(int y=27;y<=38;y++){
-		wal(7,y,Bm);
-		if(y<=35)wal(17,y,Bm);
-	}
-	for(int x=18;x<=46;x++)
-		wal(x,35,W);
-	for(int x=17;x<=46;x++)
-		wal(x,38,x&1?Bsa:Bsb);
-	for(int x=18;x<=41;x++)
-		for(int y=36;y<=37;y++)
-			til(x,y,(x^y)&1?Wsb:FG|Wsa);
-	for(int x=18;x<=26;x++)
-		for(int y=28-(x-18)/3;y<=31;y++)wal(x,y,Bd);
-	static const int8_t catrump[]={2,3,1,2,1,4};
-	int catrumpx=27;
-	for(int i=0;i<sizeof(catrump);i++){
-		for(int j=0;j<catrump[i];j++){
-			catrumpx++;
-			for(int y=26+i;y<=31;y++)
-				wal(catrumpx,y,Bd);
-		}
-	}
-	range(Bd,27,26,1,6);
-	for(int x=18;x<=45;x++)
-		for(int y=32;y<=34;y++)
-			if(y>=33||x<=39)
-				til(x,y,Wd);
-	range(w Bd,40,32,0,3);
-	range(w B,83,25,0,16);
-	range(w Wm,11,68,0,8);
-	range(w Wsa,3,69,0,9);
-	for(int x=2;x<=10;x++){
-		if(x!=1)wal(x,46,Wm);
-		if(x!=6)wal(x,48,Wm);
-		if(x!=10)wal(x,55,Wm);
-		if(x!=6&&x!=10)wal(x,57,Wm);
-	}
-	for(int x=2;x<=15;x+=3){
-		wal(x,71,W);
-		wal(x,76,W);
-	}
-	for(int x=0;x<6;x++){
-		wal(x*3,73,W);
-		wal(x*3+1,74,W);
-		wal(x*3,79,W);
-		wal(x*3+1,79,W);
-	}
-	range(w Bsa,19,73,0,6);
-	range(w Wsa,19,68,0,4);
-	range(w Wsa,26,68,1,12);
-	til(12,27,Bm);
-	til(12,31,Bm);
-	static bcode smz[]={128|Bd,35,26,D(4,1),D(4,1),D(2,1),D(3,1),D(2,1),D(4,-1),D(4,4),D(4,1),D(4,1),D(2,1),D(5,-4),0,
-		55,36,D(2,1),D(1,1),D(2,3),D(3,1),D(1,1),D(3,0),
-		61,39,D(6,1),D(4,0),
-		41,24,D(4,-1),D(3,1),D(3,2),D(4,-1),D(3,-1),D(1,-1),D(3,1),D(2,1),D(5,-3),D(2,-1),D(3,6),0,
-		60,30,D(3,1),D(6,-1),D(1,-1),D(2,-1),D(4,-3),D(4,3),0,
-		75,36,D(1,-2),D(1,-2),D(1,-3),D(1,-1),0,
-		77,40,D(2,-3),D(1,-4)};
-	diff(smz,sizeof(smz));
-	for(int x=59;x<=63;x++)
-		wal(x,45,Wd);
-	for(int x=0;x<4;x++)
-		for(int y=0;y<4;y++){
-			int xx=51+x*4,yy=49+y*4,m=0;
-			if(x<3&&y<3)wal(xx,yy,Wd);
-			else(!y)m=8;
-			else(x==3&&y==3)m=4;
-			if(!x){
-				m|=2;
-				if(!y)m=10;
-			}
-			plus(xx-2,yy-2,m);
-		}
-	plus(68,56,0);
-	for(int i=0;i<3;i++){
-		wal(68+i,54,Wd);
-		wal(70,56+i,Wd);
-		wal(68-i,58,Wd);
-		wal(66,56-i,Wd);
-	}
-	static bcode mz[]={128|Wd,50,60,D(0,2),D(1,3),D(2,1),D(1,3),D(3,-1),D(2,-1),0,
-		53,61,D(2,1),D(1,3),D(2,1),D(3,-1),D(8,1),D(4,-1),D(2,-1),D(2,-4),D(1,-3),0,
-		58,63,D(0,-2),D(2,1),D(2,1),D(7,-1),D(3,-1),D(2,-2),0,
-		62,60,D(3,1),D(1,0),
-		64,52,D(0,-2),D(3,1),D(1,0),
-		72,56,D(3,1),D(2,0),
-		70,51,D(3,-2),D(3,0),
-		73,47,D(2,-1),D(1,0),
-		71,45,D(4,-2),D(4,0),
-		63,47,D(4,-1),D(3,-3),D(3,0),
-		72,50,D(1,-1),D(3,0),
-		77,47,D(1,-2),D(1,0),
-		51,45,D(3,-2),D(5,0),
-		70,51,D(3,1),D(1,1),D(3,-2),D(1,-1),D(1,-3)};
-	diff(mz,sizeof(mz));
-	for(int i=0;i<7;i++)
-		range(w B,84+i*2,62+(i&1),1,2);
-	for(int i=0;i<6;i++)
-		wal(82+i*2,37+i,B);
-	for(int i=0;i<5;i++)
-		wal(83+i,57-i,B);
-	for(int i=0;i<4;i++)
-		wal(98-(i&1),38+i*2,B);
-	for(int x=82;x<=97;x++){
-		wal(x,68,B);
-		if(x&1)wal(x,67,B);
-	}
-	range(w B,93,51,0,3);
-	range(w B,94,49,0,3);
-	range(w B,94,53,0,3);
-	range(w B,78,69,0,3);
-	range(w B,83,65,0,16);
-	range(w B,80,73,0,19);
-	range(w B,79,77,0,20);
-	range(w B,84,33,1,2);
-	range(w B,92,59,1,2);
-	range(w B,94,58,1,2);
-	range(w B,82,71,1,2);
-	range(w B,84,71,1,2);
-	range(w B,86,69,1,3);
-	range(w B,92,69,1,3);
-	range(w B,97,49,1,5);
-	range(w B,78,70,1,8);
-	range(w B,99,70,1,8);
-	range(w W,79,75,0,19);
-	for(int x=80;x<=98;x++)
-		til(x,76,((x^1)&1)<<4|W);
-	static bcode obs[]={128|B,86,46,D(3,1),D(2,1),D(2,-1),D(2,-1),D(4,0),
-		82,59,D(3,2),D(12,-2),D(1,0),
-		87,59,D(4,-2),D(8,0),
-		82,30,D(5,1),D(2,1),D(1,0),
-		86,28,D(3,1),D(3,0),
-		83,35,D(12,-1),D(1,-3),0,
-		82,43,D(15,-5),0,
-		82,51,D(11,4),D(5,0),
-		94,70,D(2,1),D(1,1),0,
-		91,32,D(3,-3),D(2,-3)};
-	diff(obs,sizeof(obs));
 }

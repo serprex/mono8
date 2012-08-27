@@ -8,7 +8,6 @@ extern int Ph,Px,Py;
 extern double Vy,Pya;
 #include "lv.h"
 #include "spr.h"
-#include "obj.h"
 #define case(x) break;case x:;
 #define else(x) else if(x)
 #define sqr(x) ({__typeof__(x) _x=(x);_x*_x;})

@@ -39,14 +39,24 @@ void drawSpr(sprid s,int x,int y){
 	drawRect(x,y,spr[s].w,spr[s].h,spr[s].x/(float)SW,spr[s].y/(float)SH,spr[s].w/(float)SW,spr[s].h/(float)SH);
 	glEnd();
 }
-void glCirc(float x,float y,float r){
+void glTri(int x,int y,int T){
+	glBegin((T<0)||((T&2)&&!(rnd()&1))?GL_LINE_STRIP:GL_TRIANGLES);
+	T=abs(T);
+	for(int i=0;i<3;i++)
+		glVertex2i(x+4+cos(i*M_PI*2/3+T*M_PI/32)*4,y+4+sin(i*M_PI*2/3+T*M_PI/32)*4);
+	glEnd();
+}
+void glPt(int x,int y){
+	glRecti(x,y,x+1,y+1);
+}
+void glCirc(int x,int y,float r){
 	if(!r)return;
 	glBegin(GL_TRIANGLE_FAN);
 	glVertex2f(x,y);
 	for(float a=0;a<M_PI*2;a+=2/r){
-		glVertex2f(x+cosf(a)*r,y+sinf(a)*r);
+		glVertex2i(x+cosf(a)*r,y+sinf(a)*r);
 	}
-	glVertex2f(x+r,y);
+	glVertex2i(x+r,y);
 	glEnd();
 }
 void glLine(float x1,float y1,float x2,float y2){
@@ -78,11 +88,11 @@ void glRect(float x1,float y1,float x2,float y2){
 	y2-=Py-HEI/2+4;*/
 	glRectf(x1,y1,x2,y2);
 }
-void glWhite(){
-	glColor3ub(255,255,255);
+void glWhite(float a){
+	glColor4f(1,1,1,a);
 }
-void glBlack(){
-	glColor3ub(0,0,0);
+void glBlack(float a){
+	glColor4f(1,1,1,a);
 }
 uint32_t rnd(){
 	static uint32_t v=0x5A5E4943;
@@ -125,7 +135,7 @@ void sprBegin(){
 		}
 	glEnd();
 }
-void sprEnd(){
+void sprFg(){
 	glBegin(GL_QUADS);
 	for(int x=0;x<100;x++)
 		for(int y=0;y<80;y++){
@@ -145,10 +155,10 @@ void sprEnd(){
 	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 	glBlendEquation(GL_FUNC_ADD);
 	retex();*/
+}
+void sprEnd(){
 	glfwSwapBuffers();
-	double gT=1./30-glfwGetTime();
-	if(gT>0)glfwSleep(gT);
-	else printf("sleep %f\n",gT);
+	glfwSleep(1./29-glfwGetTime());
 	glfwSetTime(0);
 }
 int sprInput(){
