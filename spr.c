@@ -1,6 +1,7 @@
 #include "m8.h"
 #include "tgen.h"
-#include <GL/glfw.h>
+#include <GLFW/glfw3.h>
+#include <winix/time.h>
 //#define WID 108
 //#define HEI 80
 #define WID 800
@@ -16,6 +17,7 @@ static struct spr{
 	{32,16,14,14}
 };
 static GLuint Stx;
+static GLFWwindow*wnd;
 void notex(){
 	glBindTexture(GL_TEXTURE_2D,0);
 }
@@ -106,8 +108,8 @@ void sprInit(){
 			Sask[x][y]=Sask[63-x][y]=Sask[x][63-y]=Sask[63-x][63-y]=v;
 		}
 	glfwInit();
-	glfwDisable(GLFW_AUTO_POLL_EVENTS);
-	glfwOpenWindow(WID*2/2,HEI*2/2,0,0,0,0,0,0,GLFW_WINDOW);
+	wnd=glfwCreateWindow(WID*2/2,HEI*2/2,0,0,0);
+	glfwMakeContextCurrent(wnd);
 	glOrtho(0,WID,HEI,0,1,-1);
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_BLEND);
@@ -157,12 +159,11 @@ void sprFg(){
 	retex();*/
 }
 void sprEnd(){
-	glfwSwapBuffers();
-	glfwSleep(1./29-glfwGetTime());
-	glfwSetTime(0);
+	glfwSwapBuffers(wnd);
+	endframe(30);
 }
 int sprInput(){
 	glfwPollEvents();
-	if(glfwGetKey(GLFW_KEY_ESC)||!glfwGetWindowParam(GLFW_OPENED))exit(0);
-	return glfwGetKey('Z')||glfwGetKey('X')||glfwGetKey(GLFW_KEY_SPACE);
+	if(glfwGetKey(wnd,GLFW_KEY_ESCAPE)||glfwWindowShouldClose(wnd))exit(0);
+	return glfwGetKey(wnd,'Z')||glfwGetKey(wnd,'X')||glfwGetKey(wnd,GLFW_KEY_SPACE);
 }

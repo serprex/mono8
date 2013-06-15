@@ -1,5 +1,4 @@
 #include "m8.h"
-#include <GL/glfw.h>
 int Ph=64,Px=48,Py=128;
 double Pya;
 static int pin;
@@ -131,7 +130,7 @@ static struct goo{uint16_t x;uint8_t y;}goo[]={
 };
 void load(){
 	uint32_t p;
-	FILE*f=fopen(".mono","rb");
+	FILE*f=fopen("8","rb");
 	if(!f)return;
 	fread(&p,4,1,f);
 	fclose(f);
@@ -142,7 +141,7 @@ void save(){
 	uint32_t p;
 	for(int i=0;i<sizeof(pt);i+=2)
 		if(pt[i]&128)p|=1<<i/2;
-	FILE*f=fopen(".mono","wb");
+	FILE*f=fopen("8","wb");
 	fwrite(&p,4,1,f);
 	fclose(f);
 }
@@ -156,11 +155,6 @@ int main(int argc,char**argv){
 		T++;
 		int lpin=pin;
 		pin=sprInput();
-		if(glfwGetMouseButton(0)){
-			int x,y;
-			glfwGetMousePos(&x,&y);
-			printf("%d %d %d\n",x/8,y/8,L[x>>3][y>>3]);
-		}
 		if(pin){
 			if(!lpin){
 				Pbx[0]=Px-4;
