@@ -100,6 +100,19 @@ uint32_t rnd(){
 	static uint32_t v=0x5A5E4943;
 	return v=36969*(v&65535)+(v>>16);
 }
+static int anyInput;
+void onKey(GLFWwindow*wnd,int key,int scancode,int action,int mods){
+	static int lastkey;
+	if(action==GLFW_PRESS){
+		if(key==GLFW_KEY_ESCAPE){
+			exit(0);
+		}
+		lastkey=key;
+		anyInput=1;
+	}else if(lastkey==key){
+		anyInput=0;
+	}
+}
 void sprInit(){
 	GLubyte Sask[64][64];
 	for(int x=0;x<32;x++)
@@ -123,6 +136,7 @@ void sprInit(){
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
 	glTexImage2D(GL_TEXTURE_2D,0,SF,SW,SH,0,SF,GL_UNSIGNED_BYTE,S);
+	glfwSetKeyCallback(wnd,onKey);
 }
 void sprBegin(){
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -164,6 +178,6 @@ void sprEnd(){
 }
 int sprInput(){
 	glfwPollEvents();
-	if(glfwGetKey(wnd,GLFW_KEY_ESCAPE)||glfwWindowShouldClose(wnd))exit(0);
-	return glfwGetKey(wnd,'Z')||glfwGetKey(wnd,'X')||glfwGetKey(wnd,GLFW_KEY_SPACE);
+	if(glfwWindowShouldClose(wnd))exit(0);
+	return anyInput;
 }
