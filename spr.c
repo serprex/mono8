@@ -109,7 +109,7 @@ void onKey(GLFWwindow*wnd,int key,int scancode,int action,int mods){
 		}
 		lastkey=key;
 		anyInput=1;
-	}else if(lastkey==key){
+	}else if(action==GLFW_RELEASE&&lastkey==key){
 		anyInput=0;
 	}
 }
@@ -121,7 +121,7 @@ void sprInit(){
 			Sask[x][y]=Sask[63-x][y]=Sask[x][63-y]=Sask[63-x][63-y]=v;
 		}
 	glfwInit();
-	wnd=glfwCreateWindow(WID*2/2,HEI*2/2,0,0,0);
+	wnd=glfwCreateWindow(WID,HEI,0,0,0);
 	glfwMakeContextCurrent(wnd);
 	glOrtho(0,WID,HEI,0,1,-1);
 	glEnable(GL_TEXTURE_2D);

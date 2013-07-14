@@ -128,6 +128,8 @@ static struct goo{uint16_t x;uint8_t y;}goo[]={
 	{424,29},{432,29},{440,29},{448,29},{456,29},
 	{32,54},
 };
+int b1x=96,b1xx,b1y=288,b1h;
+float b1yy;
 void load(){
 	uint32_t p;
 	FILE*f=fopen("8","rb");
@@ -197,6 +199,23 @@ int main(int argc,char**argv){
 			int x=spk[i]*8,y=spk[i+1]*8;
 			drawSpr(Spk,x+1,y+4);
 			if(pcol(x,y)&&(Py+8)>y+4)Ph--;
+		}
+		if(b1x!=65535){
+			if(b1y>288){
+				b1y=288;
+				b1xx=Px<b1x+12?-1:1;
+				b1yy=-3.6;
+			}else{
+				b1yy=fmin(b1yy+.1875,4);
+				b1y+=b1yy;
+			}
+			b1x+=b1xx;
+			if(b1x<64)b1x=64;
+			else if(b1x>120)b1x=120;
+			if(Px+8>b1x&&Px<b1x+16&&Py<b1y+14&&Py+8>b1y){
+				// player collision
+			}
+			drawSpr(Sbo,b1x+1,b1y+1);
 		}
 		notex();
 		glPt(Px+2+pin,Py+3);
