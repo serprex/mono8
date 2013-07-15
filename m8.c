@@ -120,6 +120,10 @@ static const uint8_t sav[]={
 	67,55,
 	56,31
 };
+static const uint8_t bst[]={
+	6,45,
+	14,65
+};
 static struct goo{uint16_t x;uint8_t y;}goo[]={
 	{40,5},{56,5},{72,5},
 	{72,26},{112,26},
@@ -128,9 +132,9 @@ static struct goo{uint16_t x;uint8_t y;}goo[]={
 	{424,29},{432,29},{440,29},{448,29},{456,29},
 	{32,54},
 };
-int b1x=96,b1xx,b1y=288,b1h=3,b1hh,b1j;
-float b1yy;
-int b3x=16,b3xx=2,b3h=3;
+static int b1x=96,b1xx,b1y=288,b1h=3,b1hh,b1j;
+static float b1yy;
+static int b3x=16,b3xx=2,b3h=3;
 void load(){
 	uint32_t p;
 	uint8_t sv;
@@ -255,6 +259,13 @@ int main(int argc,char**argv){
 			glTriangleLines(b3x,496,b3x+8,496,b3x+4,496+b3h);
 			glTriangleLines(b3x,496,b3x+8,496,b3x+4,496+b3h*3);
 			glTriangleLines(b3x,496,b3x+8,496,b3x+4,496+b3h*5);
+		}
+		for(int i=0;i<sizeof(bst);i+=2){
+			int x=bst[i]*8,y=bst[i+1]*8;
+			if(pcol(x,y))Pya=-11;
+			glLine(x,y,x,y+8);
+			glLine(x+8,y,x+8,y+8);
+			glTriangleLines(x,y,x+8,y,x+4,y+(Pya<-3.65?Pya*4:6));
 		}
 		glPt(Px+2+pin,Py+3);
 		glPt(Px+4+pin,Py+3);
