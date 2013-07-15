@@ -124,27 +124,33 @@ static struct goo{uint16_t x;uint8_t y;}goo[]={
 	{40,5},{56,5},{72,5},
 	{72,26},{112,26},
 	{16,27},
-	{144,28},
+	{144,27},
 	{424,29},{432,29},{440,29},{448,29},{456,29},
 	{32,54},
 };
-int b1x=96,b1xx,b1y=288,b1h;
+int b1x=96,b1xx,b1y=288,b1h=3,b1hh,b1j;
 float b1yy;
+int b3x=16,b3xx=2,b3h=3;
 void load(){
 	uint32_t p;
+	uint8_t sv;
 	FILE*f=fopen("8","rb");
 	if(!f)return;
 	fread(&p,4,1,f);
+	fread(&sv,1,1,f);
 	fclose(f);
 	for(int i=0;i<sizeof(pt);i+=2)
 		if(p&1<<i/2)pt[i]|=128;
+	Px=sav[sv]*8;
+	Py=sav[sv+1]*8;
 }
-void save(){
+void save(uint8_t sv){
 	uint32_t p;
 	for(int i=0;i<sizeof(pt);i+=2)
 		if(pt[i]&128)p|=1<<i/2;
 	FILE*f=fopen("8","wb");
 	fwrite(&p,4,1,f);
+	fwrite(&sv,1,1,f);
 	fclose(f);
 }
 int main(int argc,char**argv){
@@ -200,24 +206,56 @@ int main(int argc,char**argv){
 			drawSpr(Spk,x+1,y+4);
 			if(pcol(x,y)&&(Py+8)>y+4)Ph--;
 		}
-		if(b1x!=65535){
-			if(b1y>288){
-				b1y=288;
+		if(b1h){
+			if(b1y==288&&b1j<0){
+				b1j=5;
 				b1xx=Px<b1x+12?-1:1;
-				b1yy=-3.6;
-			}else{
+				b1yy=-3.15;
+			}else if(--b1j<0){
 				b1yy=fmin(b1yy+.1875,4);
-				b1y+=b1yy;
+				b1y=fmin(b1y+b1yy,288);
+				b1x+=b1xx;
+				if(b1x<64)b1x=64;
+				else if(b1x>120)b1x=120;
 			}
-			b1x+=b1xx;
-			if(b1x<64)b1x=64;
-			else if(b1x>120)b1x=120;
 			if(Px+8>b1x&&Px<b1x+16&&Py<b1y+14&&Py+8>b1y){
-				// player collision
+				Pya=fmin(Pya,-2);
+				b1yy=fmax(b1yy,0);
+				if(Py>b1y+2)Ph=0;
+				else if(!b1hh){
+					--b1h;
+					b1hh=1;
+				}
 			}
 			drawSpr(Sbo,b1x+1,b1y+1);
+			if(b1hh){
+				if(Py==296)b1hh=0;
+				notex();
+				glLine(b1x,b1y,b1x+17,b1y);
+				glLine(b1x+17,b1y,b1x+17,b1y+17);
+				glLine(b1x+17,b1y+17,b1x,b1y+17);
+				glLine(b1x,b1y+17,b1x,b1y);
+				retex();
+			}
 		}
 		notex();
+		if(b3h){
+			b3x+=b3xx;
+			if(b3x<8){
+				b3x=8;
+				b3xx=2;
+			}else if(b3x>80){
+				b3x=80;
+				b3xx=-2;
+			}
+			if((Px+8>b3x||Px<b3x+8)&&Py>487&&Py<489){
+				b3h--;
+				Pya=-3.6;
+			}
+			glTriangleLines(b3x,496,b3x+8,496,b3x+4,496+b3h);
+			glTriangleLines(b3x,496,b3x+8,496,b3x+4,496+b3h*3);
+			glTriangleLines(b3x,496,b3x+8,496,b3x+4,496+b3h*5);
+		}
 		glPt(Px+2+pin,Py+3);
 		glPt(Px+4+pin,Py+3);
 		for(int i=0;i<sizeof(pt);i+=2){
@@ -231,7 +269,7 @@ int main(int argc,char**argv){
 				for(int yy=0;yy<8;yy++)
 					if(!(rnd()&3))glPt(x+xx,y+yy);
 			if(pcol(x,y)){
-				save();
+				save(i);
 				Ph=64;
 				for(int i=0;i<sizeof(pt);i+=2){
 					if(pt[i]&128)continue;

@@ -5,7 +5,7 @@ void drawSpr(sprid s,int x,int y);
 void glPt(int,int);
 void glCirc(int x,int y,float r);
 void glLine(float x1,float y1,float x2,float y2);
-void glTriangle(float,float,float,float,float,float);
+void glTriangleLines(float,float,float,float,float,float);
 void glTri(int,int,int);
 void sprInit();
 void sprBegin();

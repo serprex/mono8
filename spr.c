@@ -76,12 +76,10 @@ void glLine(float x1,float y1,float x2,float y2){
 	}
 	glEnd();
 }
-void glTriangle(float x1,float y1,float x2,float y2,float x3,float y3){
-	glBegin(GL_TRIANGLES);
-	glVertex2f(x1,y1);
-	glVertex2f(x2,y2);
-	glVertex2f(x3,y3);
-	glEnd();
+void glTriangleLines(float x1,float y1,float x2,float y2,float x3,float y3){
+	glLine(x1,y1,x2,y2);
+	glLine(x2,y2,x3,y3);
+	glLine(x3,y3,x1,y1);
 }
 void glRect(float x1,float y1,float x2,float y2){
 	/*x1-=Px-WID/2+4;
