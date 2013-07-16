@@ -4,6 +4,7 @@
 #include <math.h>
 #include <string.h>
 #include <assert.h>
+#include <winix/rand.h>
 extern int Ph,Px,Py;
 extern double Vy,Pya;
 #include "lv.h"

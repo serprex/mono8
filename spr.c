@@ -2,10 +2,10 @@
 #include "tgen.h"
 #include <GLFW/glfw3.h>
 #include <winix/time.h>
-//#define WID 108
-//#define HEI 80
-#define WID 800
-#define HEI 640
+#define WID 96
+#define HEI 64
+#define WWID 800
+#define WHEI 640
 static struct spr{
 	int x,y,w,h;
 }spr[LSPR]={
@@ -18,6 +18,10 @@ static struct spr{
 };
 static GLuint Stx;
 static GLFWwindow*wnd;
+#define SHX(x)
+//x-=Px-WID/2+4;
+#define SHY(y)
+//y-=Px-WID/2+4;
 void notex(){
 	glBindTexture(GL_TEXTURE_2D,0);
 }
@@ -35,33 +39,39 @@ static void drawRect(int x,int y,int w,int h,float tx,float ty,float tw,float th
 	glVertex2i(x,y+h);
 }
 void drawSpr(sprid s,int x,int y){
-	//x-=Px-WID/2+4;
-	//y-=Py-HEI/2+4;
+	SHX(x)
+	SHY(y)
 	glBegin(GL_QUADS);
 	drawRect(x,y,spr[s].w,spr[s].h,spr[s].x/(float)SW,spr[s].y/(float)SH,spr[s].w/(float)SW,spr[s].h/(float)SH);
 	glEnd();
 }
 void glTri(int x,int y,int T){
-	glBegin((T<0)||((T&2)&&!(rnd()&1))?GL_LINE_STRIP:GL_TRIANGLES);
+	SHX(x)
+	SHY(y)
+	glBegin((T<0)||((T&2)&&!(randbyte()&1))?GL_LINE_LOOP:GL_TRIANGLES);
 	T=abs(T);
 	for(int i=0;i<3;i++)
 		glVertex2i(x+4+cos(i*M_PI*2/3+T*M_PI/32)*4,y+4+sin(i*M_PI*2/3+T*M_PI/32)*4);
 	glEnd();
 }
 void glPt(int x,int y){
+	SHX(x)
+	SHY(y)
 	glRecti(x,y,x+1,y+1);
 }
-void glCirc(int x,int y,float r){
+void glCircLines(int x,int y,float r){
 	if(!r)return;
-	glBegin(GL_TRIANGLE_FAN);
-	glVertex2f(x,y);
-	for(float a=0;a<M_PI*2;a+=2/r){
+	SHX(x)
+	SHY(y)
+	glBegin(GL_LINE_LOOP);
+	for(float a=0;a<M_PI*2;a+=M_PI/r){
 		glVertex2i(x+cosf(a)*r,y+sinf(a)*r);
 	}
-	glVertex2i(x+r,y);
 	glEnd();
 }
 void glLine(float x1,float y1,float x2,float y2){
+	SHX(x1)SHX(x2)
+	SHY(y1)SHY(y2)
 	glBegin(GL_QUADS);
 	if(fabsf(x1-x2)<fabsf(y1-y2)){
 		glVertex2f(x1-.5,y1);
@@ -77,15 +87,15 @@ void glLine(float x1,float y1,float x2,float y2){
 	glEnd();
 }
 void glTriangleLines(float x1,float y1,float x2,float y2,float x3,float y3){
+	SHX(x1)SHX(x2)SHX(x3)
+	SHY(y1)SHY(y2)SHY(y3)
 	glLine(x1,y1,x2,y2);
 	glLine(x2,y2,x3,y3);
 	glLine(x3,y3,x1,y1);
 }
 void glRect(float x1,float y1,float x2,float y2){
-	/*x1-=Px-WID/2+4;
-	y1-=Py-HEI/2+4;
-	x2-=Px-WID/2+4;
-	y2-=Py-HEI/2+4;*/
+	SHX(x1)SHX(x2)
+	SHY(y1)SHY(y2)
 	glRectf(x1,y1,x2,y2);
 }
 void glWhite(float a){
@@ -93,10 +103,6 @@ void glWhite(float a){
 }
 void glBlack(float a){
 	glColor4f(1,1,1,a);
-}
-uint32_t rnd(){
-	static uint32_t v=0x5A5E4943;
-	return v=36969*(v&65535)+(v>>16);
 }
 static int anyInput;
 void onKey(GLFWwindow*wnd,int key,int scancode,int action,int mods){
@@ -119,9 +125,9 @@ void sprInit(){
 			Sask[x][y]=Sask[63-x][y]=Sask[x][63-y]=Sask[63-x][63-y]=v;
 		}
 	glfwInit();
-	wnd=glfwCreateWindow(WID,HEI,0,0,0);
+	wnd=glfwCreateWindow(WWID,WHEI,0,0,0);
 	glfwMakeContextCurrent(wnd);
-	glOrtho(0,WID,HEI,0,1,-1);
+	glOrtho(0,WWID,WHEI,0,1,-1);
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
@@ -143,7 +149,9 @@ void sprBegin(){
 		for(int y=0;y<80;y++){
 			if(L[x][y]&&!(L[x][y]&16)){
 				int t=L[x][y]&15;
-				int xx=x*8,yy=y*8;//int xx=x*8-Px+WID/2-4,yy=y*8-Py+HEI/2-4;
+				int xx=x*8,yy=y*8;
+				SHX(xx)
+				SHY(yy)
 				drawRect(xx,yy,8,8,(t&3)*8/(float)SW,(t>>2)*8/(float)SH,8/(float)SW,8/(float)SH);
 			}
 		}
@@ -155,7 +163,9 @@ void sprFg(){
 		for(int y=0;y<80;y++){
 			if(L[x][y]&&(L[x][y]&16)){
 				int t=L[x][y]&15;
-				int xx=x*8,yy=y*8;//int xx=x*8-Px+WID/2-4,yy=y*8-Py+HEI/2-4;
+				int xx=x*8,yy=y*8;
+				SHX(xx)
+				SHY(yy)
 				drawRect(xx,yy,8,8,(t&3)*8/(float)SW,(t>>2)*8/(float)SH,8/(float)SW,8/(float)SH);
 			}
 		}
@@ -168,7 +178,7 @@ void sprFg(){
 	glEnd();
 	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 	glBlendEquation(GL_FUNC_ADD);
-	retex();*/
+	retex();/**/
 }
 void sprEnd(){
 	glfwSwapBuffers(wnd);
