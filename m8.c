@@ -137,7 +137,8 @@ static float b1yy;
 static int b3x=16,b3xx=2,b3h=3;
 static int b4h=1800;
 static float b4a;
-static int b0h=5;
+static int b0h=32,b0sl;
+static uint16_t b0s[32];
 void load(){
 	uint32_t p;
 	uint8_t sv;
@@ -185,8 +186,8 @@ int main(int argc,char**argv){
 		T++;
 		int lpin=pin;
 		pin=sprInput();
-		if(pin!=lpin&&(inL(Px,Py+8)||inL(Px+7,Py+8)))Pya=-3.65;
-		Pya=fmin(Pya+.1875,4);
+		if(pin!=lpin&&(inL(Px,Py+8)||inL(Px+7,Py+8)))Pya=-4;
+		Pya+=.2;
 		int Pyy=(Pya>0?1:-1),Pxxdone=pin!=lpin||tryPxx();
 		for(int i=fabs(ceil(Pya));i>0;i--){
 			if(Pya>0?inL(Px,Py+8)||inL(Px+7,Py+8):inL8(Px,Py-1)||inL8(Px+7,Py-1)){
@@ -230,19 +231,19 @@ int main(int argc,char**argv){
 			if(b1y==288&&b1j<0){
 				b1j=5;
 				b1xx=Px<b1x+12?-1:1;
-				b1yy=-3.15;
-			}else if(--b1j<0){
-				b1yy=fmin(b1yy+.1875,4);
+				b1yy=-3;
+			}else(--b1j<0){
+				b1yy+=.2;
 				b1y=fmin(b1y+b1yy,288);
 				b1x+=b1xx;
 				if(b1x<64)b1x=64;
-				else if(b1x>120)b1x=120;
+				else(b1x>120)b1x=120;
 			}
 			if(Px+8>b1x&&Px<b1x+16&&Py<b1y+14&&Py+8>b1y){
 				Pya=fmin(Pya,-2);
 				b1yy=fmax(b1yy,0);
 				if(Py>b1y+2)Ph=0;
-				else if(!b1hh){
+				else(!b1hh){
 					--b1h;
 					b1hh=1;
 				}
@@ -264,7 +265,7 @@ int main(int argc,char**argv){
 			if(b3x<8){
 				b3x=8;
 				b3xx=2;
-			}else if(b3x>80){
+			}else(b3x>80){
 				b3x=80;
 				b3xx=-2;
 			}
@@ -276,14 +277,14 @@ int main(int argc,char**argv){
 			glTriangleLines(b3x,496,b3x+8,496,b3x+4,496+b3h*3);
 			glTriangleLines(b3x,496,b3x+8,496,b3x+4,496+b3h*5);
 		}
-		if(b4h&&(Px<136&&Py>528)){
+		if(b4h&&(Px<136&&Py>544)){
 			b4h--;
 			float dx=cosf(b4h/64.),dy=sinf(b4h/64.);
 			int bx=Px+4+dx*(b4h+1200)*40/3000,by=Py+4+dy*(b4h+1200)*40/3000+sin(b4h/23.)*4,br=2+b4h/600.;
 			glCircLines(bx,by,br);
-			float lr=hypot(Px-bx+4,Py-by+4);
+			int lr=hypot(Px-bx+4,Py-by+4);
 			for(;lr>4;lr--){
-				if(inL(bx-dx*lr,by-dy*lr))goto nohit;
+				if(inL(Px+4+dx*lr,Py+4+dy*lr))goto nohit;
 			}
 			Ph--;
 			lr=4;
@@ -291,13 +292,40 @@ int main(int argc,char**argv){
 			glLine(Px+4+dx*lr,Py+4+dy*lr,bx-dx*br,by-dy*br);
 		}
 		if(b0h){
+			if((Px-720)*(Px-720)+(Py-96)*(Py-96)<b0h*b0h+64)b0h--;
+			glCircLines(724,100,b0h);
+			for(int i=0;i<b0sl-1;i+=2){
+				glCircLines(b0s[i],b0s[i+1],1+i/3);
+				if((Px+4-b0s[i])*(Px+4-b0s[i])+(Py+4-b0s[i+1])*(Py+4-b0s[i+1])<i/3+i+i*i/9)Ph--;
+			}
+			if(b0sl==sizeof(b0s)/2)b0sl=-8;
+			else b0sl++;
+			if(b0sl>0&&!(b0sl&1)){
+				int bx,by,bx0,by0;
+				if(b0sl<5){
+					bx0=724;
+					by0=100;
+				}else{
+					bx0=b0s[b0sl-6];
+					by0=b0s[b0sl-5];
+				}
+				if(b0sl<3){
+					bx=724;
+					by=100;
+				}else{
+					bx=b0s[b0sl-4];
+					by=b0s[b0sl-3];
+				}
+				b0s[b0sl-2]=(bx*3-bx0>>1)+(bx<Px+4?:-1);
+				b0s[b0sl-1]=(by*3-by0>>1)+(by<Py+4?:-1);
+			}
 		}
 		for(int i=0;i<sizeof(bst);i+=2){
 			int x=bst[i]*8,y=bst[i+1]*8;
 			if(pcol(x,y))Pya=-11;
 			glLine(x,y,x,y+8);
 			glLine(x+8,y,x+8,y+8);
-			glTriangleLines(x,y,x+8,y,x+4,y+(Pya<-3.65?Pya*4:6));
+			glTriangleLines(x,y,x+8,y,x+4,y+(Pya<-4?Pya*4:6));
 		}
 		glPt(Px+2+pin,Py+3);
 		glPt(Px+4+pin,Py+3);
