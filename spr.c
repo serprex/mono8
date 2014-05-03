@@ -125,7 +125,7 @@ void sprInit(){
 			Sask[x][y]=Sask[63-x][y]=Sask[x][63-y]=Sask[63-x][63-y]=v;
 		}
 	glfwInit();
-	wnd=glfwCreateWindow(WWID,WHEI,0,0,0);
+	wnd=glfwCreateWindow(WWID,WHEI,"",0,0);
 	glfwMakeContextCurrent(wnd);
 	glOrtho(0,WWID,WHEI,0,1,-1);
 	glEnable(GL_TEXTURE_2D);
